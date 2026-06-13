@@ -18,19 +18,18 @@ function Signup() {
         navigate("/");
       }
     });
-  }, []);
+  }, [navigate]);
 
-  {
-    /* Handling Newemail */
-  }
+  
+  // Handling NewMail
 
   function handlenewemail(event) {
     setnewemail(event.target.value);
   }
 
-  {
-    /* Handle Nepass */
-  }
+  
+  //Handle Newpass
+  
 
   function handlenewpass(event) {
     setnewpass(event.target.value);

@@ -19,7 +19,7 @@ function Cart() {
 
     setCartItems(
       cartItems.filter(function (item) {
-        if (item._id == id) {
+        if (item._id === id) {
           return false;
         } else {
           return true;

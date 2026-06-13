@@ -1,7 +1,6 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import auth from "../config/firebase";
@@ -14,25 +13,22 @@ function Login() {
 
   const navigate = useNavigate();
 
-  {
-    /* Handle Email */
-  }
+ //Handle Email
 
   function handlemail(event) {
     setemail(event.target.value);
   }
 
-  {
-    /* Handle Password */
-  }
+
+  //Handle Password
 
   function handlepass(event) {
     setpass(event.target.value);
   }
 
-  {
-    /* All Fields are Required */
-  }
+  
+  // All Fields are Required
+
 
   function check() {
     if (email === "" || pass === "") {
@@ -57,7 +53,7 @@ function Login() {
         navigate("/");
       }
     });
-  }, []);
+  }, [navigate]);
 
   return (
     <>
