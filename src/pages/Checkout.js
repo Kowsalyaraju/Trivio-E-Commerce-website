@@ -5,6 +5,8 @@ import Footer from "../components/Footer";
 import auth from "../config/firebase";
 import { useNavigate } from "react-router-dom";
 
+const BASE_URL = "https://trivio-e-commerce-website-backend-3.onrender.com";
+
 function Checkout() {
   const navigate = useNavigate();
 
@@ -21,6 +23,7 @@ function Checkout() {
     pincode: "",
   });
 
+  // 🔐 Auth check
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (!user) {
@@ -32,15 +35,12 @@ function Checkout() {
     return () => unsubscribe();
   }, [navigate]);
 
+  // 🛒 Get cart
   useEffect(() => {
     axios
-      .get("http://localhost:5000/cart")
-      .then((res) => {
-        setCartItems(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      .get(`${BASE_URL}/cart`)
+      .then((res) => setCartItems(res.data))
+      .catch((err) => console.log(err));
   }, []);
 
   const total = cartItems.reduce(
@@ -48,6 +48,7 @@ function Checkout() {
     0,
   );
 
+  // 📝 Form change handler
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -55,13 +56,20 @@ function Checkout() {
     });
   };
 
+  // 💳 Razorpay Payment
   const handleOrder = async () => {
-    console.log("Button Clicked");
-
     try {
-      console.log("Creating Razorpay Order");
+      if (cartItems.length === 0) {
+        alert("Cart is empty");
+        return;
+      }
 
-      const { data } = await axios.post("http://localhost:5000/create-order", {
+      if (!window.Razorpay) {
+        alert("Razorpay SDK not loaded");
+        return;
+      }
+
+      const { data } = await axios.post(`${BASE_URL}/create-order`, {
         amount: total,
       });
 
@@ -72,9 +80,7 @@ function Checkout() {
         order_id: data.id,
 
         handler: async function (response) {
-          console.log("Payment Success", response);
-
-          await axios.post("http://localhost:5000/orders", {
+          await axios.post(`${BASE_URL}/orders`, {
             customer: formData,
             items: cartItems,
             total,
@@ -86,50 +92,31 @@ function Checkout() {
       };
 
       const rzp = new window.Razorpay(options);
-
-      rzp.on("payment.failed", function (response) {
-        console.log("PAYMENT FAILED");
-        console.log(response.error);
-      });
-
-      rzp.open(); // IMPORTANT
+      rzp.open();
     } catch (err) {
       console.log("ERROR:", err);
     }
   };
+
+  // 🎉 Success page
   if (orderPlaced) {
     return (
       <>
         <Navbar />
-
-        <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-          <div className="bg-white rounded-2xl shadow-xl p-10 text-center max-w-lg w-full">
-            <div className="text-7xl mb-4">🎉</div>
-
-            <h1 className="text-4xl font-bold text-green-600 mb-4">
-              Order Placed Successfully!
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-green-600">
+              Order Placed Successfully 🎉
             </h1>
 
-            <p className="text-gray-600 text-lg mb-6">
-              Thank you for shopping with us. Your order has been confirmed and
-              will be delivered soon.
-            </p>
-
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-              <p className="text-green-700">
-                Estimated Delivery: 3 - 5 Business Days
-              </p>
-            </div>
-
             <button
-              onClick={() => (window.location.href = "/")}
-              className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg text-lg font-semibold transition"
+              onClick={() => navigate("/")}
+              className="mt-5 bg-green-600 text-white px-6 py-3 rounded"
             >
               Continue Shopping
             </button>
           </div>
         </div>
-
         <Footer />
       </>
     );
@@ -146,129 +133,95 @@ function Checkout() {
           </h1>
 
           <div className="grid lg:grid-cols-3 gap-8">
-            {/* Shipping Information */}
-            <div className="lg:col-span-2 bg-white rounded-xl shadow-lg p-8">
-              <h2 className="text-2xl font-bold mb-6">Shipping Information</h2>
+            {/* 🏠 FORM */}
+            <div className="lg:col-span-2 bg-white p-8 rounded-xl shadow">
+              <h2 className="text-2xl font-bold mb-6">Shipping Details</h2>
 
               <div className="grid md:grid-cols-2 gap-4">
                 <input
-                  type="text"
                   name="fullName"
-                  placeholder="Full Name *"
+                  placeholder="Full Name"
                   value={formData.fullName}
                   onChange={handleChange}
-                  className="border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  required
+                  className="border p-3 rounded"
                 />
 
                 <input
-                  type="email"
                   name="email"
-                  placeholder="Email Address *"
+                  placeholder="Email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  required
+                  className="border p-3 rounded"
                 />
 
                 <input
-                  type="tel"
                   name="phone"
-                  placeholder="Phone Number *"
+                  placeholder="Phone Number"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  required
+                  className="border p-3 rounded"
                 />
 
                 <input
-                  type="text"
                   name="city"
-                  placeholder="City *"
+                  placeholder="City"
                   value={formData.city}
                   onChange={handleChange}
-                  className="border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  required
+                  className="border p-3 rounded"
                 />
 
                 <input
-                  type="text"
                   name="state"
-                  placeholder="State *"
+                  placeholder="State"
                   value={formData.state}
                   onChange={handleChange}
-                  className="border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  required
+                  className="border p-3 rounded"
                 />
 
                 <input
-                  type="text"
                   name="pincode"
-                  placeholder="Pincode *"
+                  placeholder="Pincode"
                   value={formData.pincode}
                   onChange={handleChange}
-                  className="border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  required
+                  className="border p-3 rounded"
                 />
               </div>
 
               <textarea
                 name="address"
-                rows="5"
-                placeholder="Complete Address *"
+                placeholder="Full Address"
                 value={formData.address}
                 onChange={handleChange}
-                className="border p-3 rounded-lg w-full mt-4 focus:outline-none focus:ring-2 focus:ring-green-500"
-                required
-              ></textarea>
+                className="border p-3 rounded w-full mt-4"
+                rows="4"
+              />
             </div>
 
-            {/* Order Summary */}
-            <div>
-              <div className="bg-white rounded-xl shadow-lg p-6 sticky top-5">
-                <h2 className="text-2xl font-bold mb-6">Order Summary</h2>
+            {/* 🧾 ORDER SUMMARY */}
+            <div className="bg-white p-6 rounded-xl shadow">
+              <h2 className="text-2xl font-bold mb-4">Order Summary</h2>
 
-                {cartItems.length === 0 ? (
-                  <p className="text-gray-500">No items in cart</p>
-                ) : (
-                  <>
-                    {cartItems.map((item) => (
-                      <div
-                        key={item._id}
-                        className="flex justify-between border-b py-3"
-                      >
-                        <div>
-                          <p className="font-semibold">{item.name}</p>
+              {cartItems.map((item) => (
+                <div key={item._id} className="flex justify-between py-2">
+                  <span>
+                    {item.name} × {item.quantity}
+                  </span>
+                  <span>₹{item.price * item.quantity}</span>
+                </div>
+              ))}
 
-                          <p className="text-sm text-gray-500">
-                            Qty: {item.quantity}
-                          </p>
-                        </div>
+              <div className="font-bold text-xl mt-4">Total: ₹{total}</div>
 
-                        <p className="font-bold">
-                          ₹{item.price * item.quantity}
-                        </p>
-                      </div>
-                    ))}
+              <button
+                onClick={handleOrder}
+                className="w-full bg-green-600 text-white py-3 mt-4 rounded"
+              >
+                Pay Now
+              </button>
 
-                    <div className="flex justify-between text-xl font-bold mt-6">
-                      <span>Total</span>
-                      <span>₹{total}</span>
-                    </div>
-
-                    <button
-                      onClick={handleOrder}
-                      className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg mt-6 text-lg font-semibold transition"
-                    >
-                      Pay Now
-                    </button>
-
-                    <div className="mt-4 text-center text-sm text-gray-600">
-                      Estimated Delivery: 3 - 5 Business Days
-                    </div>
-                  </>
-                )}
-              </div>
+              <p className="text-sm text-gray-500 mt-3">
+                Delivery: 3–5 Business Days
+              </p>
             </div>
           </div>
         </div>

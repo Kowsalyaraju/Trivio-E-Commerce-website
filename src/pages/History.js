@@ -3,12 +3,14 @@ import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+const BASE_URL = "https://trivio-e-commerce-website-backend-3.onrender.com";
+
 function History() {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/orders")
+      .get(`${BASE_URL}/orders`)
       .then((res) => {
         setOrders(res.data);
       })
@@ -49,8 +51,8 @@ function History() {
                 <p>{order.customer.phone}</p>
 
                 <p className="mt-2 text-gray-600">
-                  {order.customer.address},{order.customer.city},
-                  {order.customer.state} -{order.customer.pincode}
+                  {order.customer.address}, {order.customer.city},{" "}
+                  {order.customer.state} - {order.customer.pincode}
                 </p>
 
                 <div className="mt-4 border-t pt-4">

@@ -4,29 +4,24 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+const BASE_URL = "https://trivio-e-commerce-website-backend-3.onrender.com";
+
 function Cart() {
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/cart").then((res) => {
+    axios.get(`${BASE_URL}/cart`).then((res) => {
       setCartItems(res.data);
     });
   }, []);
 
   const removeItem = async (id) => {
-    await axios.delete(`http://localhost:5000/cart/${id}`);
+    await axios.delete(`${BASE_URL}/cart/${id}`);
 
-    setCartItems(
-      cartItems.filter(function (item) {
-        if (item._id === id) {
-          return false;
-        } else {
-          return true;
-        }
-      }),
-    );
+    setCartItems((prev) => prev.filter((item) => item._id !== id));
   };
+
   const total = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
@@ -56,18 +51,16 @@ function Cart() {
 
                   <div className="flex-1">
                     <h2 className="text-xl font-bold">{item.name}</h2>
-
                     <p className="text-gray-600 mt-2">
                       Quantity: {item.quantity}
                     </p>
-
                     <p className="text-2xl font-bold text-green-600 mt-2">
                       ₹{item.price}
                     </p>
                   </div>
 
                   <button
-                    className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg transition"
+                    className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg"
                     onClick={() => removeItem(item._id)}
                   >
                     Remove
@@ -92,7 +85,7 @@ function Cart() {
                 </div>
 
                 <button
-                  className="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg mt-6 text-lg font-semibold"
+                  className="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg mt-6"
                   onClick={() => navigate("/checkout")}
                 >
                   Proceed to Checkout

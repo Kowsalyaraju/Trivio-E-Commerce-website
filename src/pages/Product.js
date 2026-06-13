@@ -12,9 +12,11 @@ function Product() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("http://localhost:5000/products").then((res) => {
-      setProducts(res.data);
-    });
+    axios
+      .get("https://trivio-e-commerce-website-backend-3.onrender.com/products")
+      .then((res) => {
+        setProducts(res.data);
+      });
   }, []);
 
   const filteredProducts = products.filter((product) =>
