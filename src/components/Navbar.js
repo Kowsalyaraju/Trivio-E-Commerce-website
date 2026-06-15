@@ -104,10 +104,6 @@ function Navbar() {
             </Link>
             )}
 
-            <Link to="/login" onClick={() => setmenu(false)}>
-              Login
-            </Link>
-
             <Link to="/history" onClick={() => setmenu(false)}>
               Orders
             </Link>
