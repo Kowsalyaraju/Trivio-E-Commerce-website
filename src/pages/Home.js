@@ -23,7 +23,7 @@ function Home() {
         <div className="font-bold text-xs md:text-2xl ml-9">
           <h4>Satisfaction Guarantee</h4>
           <p className="mt-10">
-            At Nostra, your satisfaction is our top priority. We are committed
+            At Trivio, your satisfaction is our top priority. We are committed
             to providing a seamless shopping experience with high-quality
             products and reliable service.
           </p>
