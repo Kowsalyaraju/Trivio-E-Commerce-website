@@ -105,7 +105,7 @@ function Navbar() {
             )}
 
             <Link to="/history" onClick={() => setmenu(false)}>
-              Orders
+              My Orders
             </Link>
           </div>
         </div>
