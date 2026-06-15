@@ -94,6 +94,16 @@ function Navbar() {
               Cart
             </Link>
 
+            {log ? (
+              <Link onClick={logout}>
+              Logout
+            </Link>) :
+            (
+              <Link to="/login" onClick={() => setmenu(false)}>
+              Login
+            </Link>
+            )}
+
             <Link to="/login" onClick={() => setmenu(false)}>
               Login
             </Link>
