@@ -64,7 +64,7 @@ function Navbar() {
           )}
 
           <Link to="/history" className="text-xl">
-            Orders
+            My Orders
           </Link>
         </div>
 
