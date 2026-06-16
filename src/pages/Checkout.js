@@ -13,7 +13,7 @@ function Checkout() {
   const [cartItems, setCartItems] = useState([]);
   const [orderPlaced, setOrderPlaced] = useState(false);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState({ 
     fullName: "",
     email: "",
     phone: "",
